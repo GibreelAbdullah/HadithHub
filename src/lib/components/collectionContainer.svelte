@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { selectedLanguagesStore } from '$lib/common/store';
-	import { getLanguageFullName } from '$lib/common/utils';
+	import { getLanguageFullName } from '$lib/common/utilsV2';
 	import { popup } from '@skeletonlabs/skeleton';
 	export let dataPromise: Promise<any>;
 
@@ -71,12 +71,13 @@
 		<div class="collection grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-8 p-4">
 			{#each dataList as data}
 				<a class="card p-4 text-center relative" href="/{data[0]}">
-					<h1>
-						{data[3]}
-						<br />
-						{data[2]}
-						<br />
-					</h1>
+						<!-- If no language is selected then it should take 2 -->
+						{#each {length: $selectedLanguagesStore.length ? $selectedLanguagesStore.length : 2} as _, i}
+							{#if data[2 + i] != null}
+								{data[2 + i]}
+								<br />
+							{/if}
+						{/each}
 					{#await getUnavailableCollections(data[1], $selectedLanguagesStore)}
 						<div class="placeholder w-40 m-auto animate-pulse"></div>
 					{:then collectionNames}
