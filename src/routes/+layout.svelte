@@ -31,7 +31,7 @@
 	import { enhance } from '$app/forms';
 	import SvgIcon from '$lib/common/svgIcon.svelte';
 	import SearchModal from '$lib/components/searchModal.svelte';
-	import SideBarContents from '$lib/common/sideBarContents.svelte';
+	import SideBarContents from '$lib/common/sideBarContentsV2.svelte';
 
 	export const storeTheme: Writable<string> = localStorageStore('storeTheme', 'skeleton');
 
