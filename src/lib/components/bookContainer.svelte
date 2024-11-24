@@ -35,48 +35,39 @@
 		</div>
 	{/each}
 {:then dataList}
-	{#each dataList as data}
-		{#if data[3] == 'collection'}
-			<div class="p-4">
-				<div class="sticky top-0 card p-4 m-auto !variant-glass-secondary max-w-[90rem]">
-					<div class="grid px-3">
-						<ol class="breadcrumb">
-							<li class="crumb anchor"><a href="/">Home</a></li>
-							<li class="crumb-separator" aria-hidden="true">&rsaquo;</li>
-							<li class="crumb">{data[4]}</li>
-						</ol>
+	<div class="max-w-[90rem] m-auto">
+		<div class="collection grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-8 p-4">
+			{#each dataList as data}
+				{#if data[3] == 'collection'}
+					<div class="p-4 lg:col-span-2 2xl:col-span-3">
+						<div class="sticky top-0 card p-4 m-auto !variant-glass-secondary max-w-[90rem]">
+							<div class="grid px-3">
+								<ol class="breadcrumb">
+									<li class="crumb anchor"><a href="/">Home</a></li>
+									<li class="crumb-separator" aria-hidden="true">&rsaquo;</li>
+									<li class="crumb">{data[4]}</li>
+								</ol>
+							</div>
+						</div>
 					</div>
-				</div>
-			</div>
-		{:else if data[3] == 'book'}
-			<a href="/{bookURL}/{data[0]}" class="card">
-				<div class="p-4">
-					<div class="card p-4 m-auto max-w-[90rem]">
-						<div class="hadithGroup font-medium p-2 grid">
-							{data[0]} -
+				{:else if data[3] == 'book'}
+					<a class="card p-4 text-center relative flex flex-col h-full" href="/{bookURL}/{data[0]}">
+							{data[0]}
+							<hr/>
 							{#each { length: languageStore.value.length ? languageStore.value.length : 2 } as _, i}
 								<div>
 									{data[i + 4]}
 								</div>
 							{/each}
-							<div class="hidden md:block text-right">
-								<div class="badge bg-gray-500">
-									{data[1][0]} to
-									{data[1][1]}
-								</div>
+							<div class="badge bg-gray-500 mt-auto mx-auto">
+								{data[1][0]} to
+								{data[1][1]}
 							</div>
-						</div>
-					</div>
-					<div class="md:hidden text-center">
-						<div class="badge bg-gray-500">
-							{data[1][0]} to
-							{data[1][1]}
-						</div>
-					</div>
-				</div>
-			</a>
-		{/if}
-	{/each}
+					</a>
+				{/if}
+			{/each}
+		</div>
+	</div>
 {:catch data}
 	<div class="card p-4 m-4">Error. What you're looking for is not here. Error : {data}</div>
 {/await}
