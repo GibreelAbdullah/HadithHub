@@ -1,18 +1,17 @@
 <script lang="ts">
-	import { selectedLanguagesStore } from '$lib/common/store';
-	import { getLanguageFullName } from '$lib/common/utilsV2';
-	import { popup } from '@skeletonlabs/skeleton';
-	export let dataPromise: Promise<any>;
-
-	function getUnavailableCollections(availbleLanguagesOfCollection: string[], $selectedLanguagesStore: string[]) {
+	import { popup } from '@skeletonlabs/skeleton';		
+	let {collectionPromise} = $props()
+	import { languageStore } from '$lib/functions/store.svelte';
+	import { getLanguageFullName } from './common/sideBarContents.svelte';
+	
+	function getUnavailableCollections(availbleLanguagesOfCollection: string[], selectedLanguagesStore: string[]) {
 		let unavailableLanguagesShortName: string[] = [];
-		selectedLanguagesStore.subscribe((selectedLanguages) => {
-			selectedLanguages.forEach((collection) => {
+			selectedLanguagesStore.forEach((collection) => {
 				if (!availbleLanguagesOfCollection.includes(collection)) {
 					unavailableLanguagesShortName.push(collection);
 				}
 			});
-		});
+
 		unavailableLanguagesShortName = unavailableLanguagesShortName;
 		return getLanguageFullName(unavailableLanguagesShortName);
 	}
@@ -54,10 +53,10 @@
 	class="input max-w-max mx-auto mt-4 block"
 	type="text"
 	id="filterCollections"
-	on:keyup={filterCollections}
+	onkeyup={filterCollections}
 	placeholder="Filter Collections..."
 />
-{#await dataPromise}
+{#await collectionPromise}
 	<div class="grid grid-cols-1 md:grid-cols-2 gap-8 p-4 max-w-[90rem] m-auto">
 		{#each { length: 7 } as _, i}
 			<div class="card p-4 h-20">
@@ -72,13 +71,13 @@
 			{#each dataList as data}
 				<a class="card p-4 text-center relative" href="/{data[0]}">
 						<!-- If no language is selected then it should take 2 -->
-						{#each {length: $selectedLanguagesStore.length ? $selectedLanguagesStore.length : 2} as _, i}
+						{#each {length: languageStore.value.length ? languageStore.value.length : 2} as _, i}
 							{#if data[2 + i] != null}
 								{data[2 + i]}
 								<br />
 							{/if}
 						{/each}
-					{#await getUnavailableCollections(data[1], $selectedLanguagesStore)}
+					{#await getUnavailableCollections(data[1], languageStore.value)}
 						<div class="placeholder w-40 m-auto animate-pulse"></div>
 					{:then collectionNames}
 						{#if collectionNames.length != 0}
@@ -88,7 +87,7 @@
 					<button
 						type="button"
 						class="btn-icon text-lg place-self-center absolute top-0 right-0"
-						on:click={clickHandler}
+						onclick={clickHandler}
 						use:popup={{
 							event: 'click',
 							target: 'popupFeatured-' + data[0],

@@ -2,8 +2,8 @@
 	// @ts-nocheck
 	import { page } from '$app/stores';
 	import HadithContainer from '$lib/components/hadithContainer.svelte';
-	import { getLanguageFullName, getData, getCollectionFullName } from '$lib/common/utils';
-	import HadithPlaceholder from '$lib/common/hadithPlaceholder.svelte';
+	import { getLanguageFullName, getData, getCollectionFullName } from '$lib/common/utilsV2';
+	import HadithPlaceholder from '$lib/components/hadithPlaceholder.svelte';
 	import { searchUrl } from '$lib/common/constants';
 
 	const title = `Search for "${$page.url.searchParams.get('query')}" | HadithHub`;

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import SvgIcon from '$lib/common/svgIcon.svelte';
+	import SvgIcon from '$lib/components/common/svgIcon.svelte';
 </script>
 
 <footer>

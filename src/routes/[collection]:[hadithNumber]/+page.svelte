@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { urlPrefix } from '$lib/common/constants';
-	import { selectedLanguagesStore } from '$lib/common/sideBarContents.svelte';
+	import { urlPrefix } from '$lib/data/constantsV2';
+	import { selectedLanguagesStore } from '$lib/functions/store.svelte';
 	import HadithContainer from '$lib/components/hadithContainer.svelte';
-	import { getLanguageFullName, getData } from '$lib/common/utils';
-	import HadithPlaceholder from '$lib/common/hadithPlaceholder.svelte';
+	import { getLanguageFullName, getData } from '$lib/functions/utilsV2';
+	import HadithPlaceholder from '$lib/components/hadithPlaceholder.svelte';
 
 	let title = `${$page.params.collection}:${$page.params.hadithNumber} | HadithHub`;
 

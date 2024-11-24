@@ -4,8 +4,8 @@
 	export let source: string;
 
 	import { Avatar } from '@skeletonlabs/skeleton';
-	import { muhaddithUrl, urlPrefix } from './constants';
-	import { getData } from './utils';
+	import { muhaddithUrl, urlPrefix } from '../common/constantsV2';
+	import { getData } from '../common/utilsV2';
 	let muhaddithDetailsUrl: string;
 	let MuhaddithDetailsPromise: Promise<any>;
 	$: {

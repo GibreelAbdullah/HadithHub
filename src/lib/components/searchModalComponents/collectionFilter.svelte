@@ -1,8 +1,17 @@
 <script lang="ts" context="module">
+	import { collectionsQueryString, urlPrefix } from '$lib/common/constantsV2';
+	import { selectedLanguagesStore } from '$lib/common/store.svelte';
+	import { getData } from '$lib/common/utilsV2';
 	import { Accordion, AccordionItem, ListBox, ListBoxItem } from '@skeletonlabs/skeleton';
 	import { writable, type Writable } from 'svelte/store';
-	import { collectionPromise } from '$lib/common/utils';
-
+	let collectionPromise: Promise<any>;
+		
+	{
+		selectedLanguagesStore.subscribe((selectedLanguages) => {
+			let languages = selectedLanguages.filter((lang) => lang !== '').toString();
+			collectionPromise = getData(`${urlPrefix}${collectionsQueryString}&langs=${languages}`);
+		});
+	}
 	let selectedcollectionsSearchStore: Writable<Array<string>> = writable();
 
 	export { selectedcollectionsSearchStore };

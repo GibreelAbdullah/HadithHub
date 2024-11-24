@@ -2,9 +2,9 @@
 	import { page } from '$app/stores';
 	import * as htmlToImage from 'html-to-image';
 	import { clipboard, popup, type PopupSettings } from '@skeletonlabs/skeleton';
-	import SvgIcon from '../common/svgIcon.svelte';
+	import SvgIcon from './common/svgIcon.svelte';
 	import download from 'downloadjs';
-	import GradingPopup from '$lib/common/gradingPopup.svelte';
+	import GradingPopup from '$lib/components/gradingPopup.svelte';
 	export let book = '';
 	export let allHadiths: any[] = [];
 	export let singleHadithView: boolean = false;

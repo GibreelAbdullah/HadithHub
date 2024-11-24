@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { urlPrefix } from '$lib/common/constants';
-	import SvgIcon from '$lib/common/svgIcon.svelte';
+	import SvgIcon from '$lib/components/common/svgIcon.svelte';
 	let htmlPromise = fetch(urlPrefix + '/updates/about/about.html').then((response) => {
 		return response.text();
 	});

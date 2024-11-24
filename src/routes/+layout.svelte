@@ -21,17 +21,17 @@
 	initializeStores();
 	const drawerStore = getDrawerStore();
 	const modalStore = getModalStore();
-	
+
 	storePopup.set({ computePosition, autoUpdate, flip, shift, offset, arrow });
 
-	import Footer from '$lib/common/footer.svelte';
+	import Footer from '$lib/components/common/footer.svelte';
 	import { browser } from '$app/environment';
 	import type { Writable } from 'svelte/store';
 	import type { SubmitFunction } from '@sveltejs/kit';
 	import { enhance } from '$app/forms';
-	import SvgIcon from '$lib/common/svgIcon.svelte';
-	import SearchModal from '$lib/components/searchModal.svelte';
-	import SideBarContents from '$lib/common/sideBarContentsV2.svelte';
+	import SvgIcon from '$lib/components/common/svgIcon.svelte';
+	import SearchModal from '$lib/components/searchModalComponents/searchModal.svelte';
+	import SideBarContents from '$lib/components/common/sideBarContents.svelte';
 
 	export const storeTheme: Writable<string> = localStorageStore('storeTheme', 'skeleton');
 
@@ -56,7 +56,7 @@
 		{ type: 'crimson', name: 'Crimson', icon: '⭕' },
 		{ type: 'wintry', name: 'Wintry', icon: '🌨️' }
 	];
-	
+
 	storeTheme.subscribe(setBodyThemeAttribute);
 	function setBodyThemeAttribute(): void {
 		if (!browser) return;
@@ -101,16 +101,13 @@
 						<SvgIcon class="!w-40 hidden md:inline-block" name="hadithHub" />
 					</span>
 				</a>
+				<button class="ml-4 btn variant-soft hover:variant-soft-primary h-10" on:click={triggerSearch}>
+					<span class="text-3xl p-0 pb-2">⌕</span>
+					<span class="text-sm hidden md:inline-block badge variant-soft">Search</span>
+				</button>
 			</svelte:fragment>
-			<button
-				class="btn variant-soft hover:variant-soft-primary h-10 "
-				on:click={triggerSearch}
-			>
-				<span class="text-3xl p-0 pb-2">⌕</span>
-				<span class="text-sm hidden md:inline-block badge variant-soft">Search</span>
-			</button>
-			<svelte:fragment slot="trail">
 
+			<svelte:fragment slot="trail">
 				<div class="relative">
 					<!-- trigger -->
 					<button

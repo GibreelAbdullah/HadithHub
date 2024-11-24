@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
 	import {getModalStore } from '@skeletonlabs/skeleton';
 	import { page } from '$app/stores';
 	import LanguageFilter from '$lib/searchModalComponents/languageFilter.svelte';
@@ -15,7 +15,7 @@
 	// Elements
 	let elemDocSearch: HTMLElement;
 	$selectedLanguagesSearchStore = $page.url.searchParams.get('language_code')?.split(',') ??
-		window.localStorage.getItem('storedLanguagesList')?.split(',') ?? ['ara', 'eng'];
+		window.localStorage.getItem('languagesLocalStorage')?.split(',') ?? ['ara', 'eng'];
 
 	$selectedcollectionsSearchStore = $page.url.searchParams.get('collection')?.split(',') ?? [];
 
@@ -34,7 +34,6 @@
 	bind:this={elemDocSearch}
 	class="modal-search card bg-surface-100/60 dark:bg-surface-500/30 backdrop-blur-lg overflow-y-auto w-full max-w-[800px] shadow-xl mt-8 mb-auto h-fit"
 >
-	<!-- Header -->
 	<header class="modal-search-header {cHeader}">
 		<form
 			action="/search"
@@ -58,7 +57,6 @@
 			<input type="hidden" name="collection" value={$selectedcollectionsSearchStore} />
 		</form>
 	</header>
-	<!-- Filters-->
 	<div class="p-3 overflow-y-auto">
 		<LanguageFilter />
 	</div>
@@ -73,4 +71,4 @@
 		<div><kbd>Esc</kbd> to close</div>
 		<div><kbd>Enter</kbd> to search</div>
 	</footer>
-</div>
+</div> -->
