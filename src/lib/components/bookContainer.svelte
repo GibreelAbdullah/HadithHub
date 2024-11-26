@@ -52,17 +52,17 @@
 					</div>
 				{:else if data[3] == 'book'}
 					<a class="card p-4 text-center relative flex flex-col h-full" href="/{bookURL}/{data[0]}">
-							{data[0]}
-							<hr/>
-							{#each { length: languageStore.value.length ? languageStore.value.length : 2 } as _, i}
-								<div>
-									{data[i + 4]}
-								</div>
-							{/each}
-							<div class="badge bg-gray-500 mt-auto mx-auto">
-								{data[1][0]} to
-								{data[1][1]}
+						{data[0]}
+						<hr />
+						{#each { length: languageStore.value.length ? languageStore.value.length : 2 } as _, i}
+							<div>
+								{data[i + 4]}
 							</div>
+						{/each}
+						<div class="badge bg-gray-500 mt-auto mx-auto">
+							{data[1][0]} to
+							{data[1][1]}
+						</div>
 					</a>
 				{/if}
 			{/each}

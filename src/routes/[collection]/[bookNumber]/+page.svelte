@@ -1,56 +1,58 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import HadithContainer from '$lib/components/hadithContainer.svelte';
-	import { selectedLanguagesStore } from '$lib/functions/store.svelte';
-	import { urlPrefix } from '$lib/data/constantsV2';
-	import { getLanguageFullName, getData } from '$lib/functions/utilsV2';
+	import { languageStore } from '$lib/functions/store.svelte';
+	import { hadithInBookQueryString, urlPrefix } from '$lib/data/constantsV2';
+	import { getData } from '$lib/functions/utilsV2';
 	import HadithPlaceholder from '$lib/components/hadithPlaceholder.svelte';
 
 	let title = `Book ${$page.params.bookNumber} - ${$page.params.collection} | HadithHub`;
+
+	let bookTitle = $page.params.bookNumber;
 
 	///Some data points (like book name in breadcrumbs) is taken from the first
 	///element of the Promises. But if the first element errors out because the translation
 	///in that language is not available, need to go to the next element to get the data.
 	///variable i will be used to track that
-	let i: number = 0;
+	// let i: number = 0;
 
-	let allHadithPromises: { language: string; promise: Promise<any> }[] = [];
+	// let allHadithPromises: { language: string; promise: Promise<any> }[] = [];
 
-	let unavailableLanguages: string[] = [];
+	// let unavailableLanguages: string[] = [];
 
-	///If the promises are rejected, need to move forward ignoring those promises.
-	///This function will make the value of all rejected promises = null and it
-	///will be removed in the next step
-	function allResolvingErrors(allHadithPromises: { language: string; promise: Promise<any> }[]) {
-		unavailableLanguages = [];
-		return Promise.all(
-			allHadithPromises.map(async function (p, index) {
-				return p.promise.catch(function nullifyErroredPromises(error) {
-					if (i == index) {
-						i++;
-						if (i >= allHadithPromises.length) {
-							i = -1; //i=-1 when no selected language has data
-						}
-					}
-					unavailableLanguages.push(p.language);
-					return null;
-				});
-			})
-		);
-	}
+	// ///If the promises are rejected, need to move forward ignoring those promises.
+	// ///This function will make the value of all rejected promises = null and it
+	// ///will be removed in the next step
+	// function allResolvingErrors(allHadithPromises: { language: string; promise: Promise<any> }[]) {
+	// 	unavailableLanguages = [];
+	// 	return Promise.all(
+	// 		allHadithPromises.map(async function (p, index) {
+	// 			return p.promise.catch(function nullifyErroredPromises(error) {
+	// 				if (i == index) {
+	// 					i++;
+	// 					if (i >= allHadithPromises.length) {
+	// 						i = -1; //i=-1 when no selected language has data
+	// 					}
+	// 				}
+	// 				unavailableLanguages.push(p.language);
+	// 				return null;
+	// 			});
+	// 		})
+	// 	);
+	// }
 
-	$: {
-		i = 0;
-		allHadithPromises = [];
-		for (const language in $selectedLanguagesStore) {
-			const url = `${urlPrefix}/editions/${$selectedLanguagesStore[language]}-${$page.params.collection}/sections/${$page.params.bookNumber}.min.json`;
-			const hadithPromise = getData(url);
-			allHadithPromises.push({
-				language: $selectedLanguagesStore[language],
-				promise: hadithPromise
-			});
-		}
-	}
+	// $: {
+	// 	i = 0;
+	// 	allHadithPromises = [];
+	// 	for (const language in $selectedLanguagesStore) {
+	// 		const url = `${urlPrefix}/editions/${$selectedLanguagesStore[language]}-${$page.params.collection}/sections/${$page.params.bookNumber}.min.json`;
+	// 		const hadithPromise = getData(url);
+	// 		allHadithPromises.push({
+	// 			language: $selectedLanguagesStore[language],
+	// 			promise: hadithPromise
+	// 		});
+	// 	}
+	// }
 </script>
 
 <svelte:head>
@@ -81,68 +83,50 @@
 </svelte:head>
 
 <main>
-	{#if allHadithPromises.length != 0}
-		{#await allResolvingErrors(allHadithPromises)}
+	{#if languageStore.value.length != 0}
+		{#await getData(`${urlPrefix}${hadithInBookQueryString}&langs=${languageStore.value.toString()}&collection=${$page.params.collection}&book_number=${$page.params.bookNumber}`)}
 			<div class="sticky top-0 card p-4 !variant-glass-secondary max-w-[90rem] m-auto my-4">
 				<div class="hadithGroup grid px-5">
 					<ol class="breadcrumb">
 						<li class="crumb anchor"><a href="/">Home</a></li>
-						<li class="crumb-separator" aria-hidden>&rsaquo;</li>
-						<div class="placeholder w-52 m-auto animate-pulse" />
+						<li class="crumb-separator" aria-hidden="true">&rsaquo;</li>
+						<div class="placeholder w-52 m-auto animate-pulse"></div>
 					</ol>
 				</div>
 			</div>
 			<div class="card flex-wrap !bg-transparent max-w-[90rem] m-auto my-4">
 				<div class="hadithGroup grid">
 					<div class="break-words leading-7 m-3">
-						<div class="placeholder animate-pulse" />
+						<div class="placeholder animate-pulse"></div>
 					</div>
 					<div class="break-words leading-7 m-3 text-right justify-end">
-						<div class="placeholder animate-pulse" />
+						<div class="placeholder animate-pulse"></div>
 					</div>
 				</div>
 			</div>
 			<HadithPlaceholder />
-		{:then data}
-			{#if i != -1}
-				<div class="sticky top-0 card p-4 !variant-glass-secondary max-w-[90rem] m-auto my-4">
-					<div class="hadithGroup grid px-5">
-						<ol class="breadcrumb">
-							<li class="crumb anchor"><a href="/">Home</a></li>
-							<li class="crumb-separator" aria-hidden>&rsaquo;</li>
-							<li class="crumb anchor">
-								<a href="/{$page.params.collection}">{data.filter((n) => n)[0].metadata.name}</a>
-							</li>
-							<li class="crumb-separator" aria-hidden>&rsaquo;</li>
-							<li class="crumb">
-								{data.filter((n) => n)[0].metadata.section[data[i].hadiths[0].reference.book][
-									'eng-name'
-								] || 
-								data.filter((n) => n)[0].metadata.section[data[i].hadiths[0].reference.book][
-									'ara-name'
-								]}
-							</li>
-						</ol>
-					</div>
-				</div>
-			{/if}
-			{#if unavailableLanguages.length != 0}
-				<div class="p-4">
-					<div class="card !bg-red-500 max-w-[90rem] relative m-auto">
-						<div class="hadithGroup font-medium p-2 grid text-center">
-							{#await getLanguageFullName(unavailableLanguages)}
-								<div class="placeholder w-40 m-auto animate-pulse my-1" />
-							{:then languages}
-								This book is not available in {languages}
-							{/await}
+		{:then dataList}
+			{#each dataList as data}
+				{#if data[4] == 'collection'}
+					<div class="sticky top-0 card p-4 !variant-glass-secondary max-w-[90rem] m-auto my-4">
+						<div class="hadithGroup grid px-5">
+							<ol class="breadcrumb">
+								<li class="crumb anchor"><a href="/">Home</a></li>
+								<li class="crumb-separator" aria-hidden="true">&rsaquo;</li>
+								<li class="crumb anchor">
+									<a href="/{$page.params.collection}">{data[6]}</a>
+								</li>
+								<li class="crumb-separator" aria-hidden="true">&rsaquo;</li>
+								<li id="bookCrumb" class="crumb">{bookTitle}</li>
+							</ol>
 						</div>
 					</div>
-				</div>
-			{/if}
-			{#if i != -1}
-				<!-- Filter is to remove null values. -->
-				<HadithContainer allHadiths={data.filter((n) => n)} book={$page.params.collection} />
-			{/if}
+				{:else if data[4] == 'book'}
+					{@const dummy = bookTitle = data[6]}
+				{:else}
+					<HadithContainer dataRecord={data} book={$page.params.collection} />
+				{/if}
+			{/each}
 		{:catch data}
 			<div class="card p-4 m-4">
 				<div class="hadithGroup font-medium p-2 grid">

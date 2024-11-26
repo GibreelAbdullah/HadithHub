@@ -3,11 +3,15 @@
 	import * as htmlToImage from 'html-to-image';
 	import { clipboard, popup, type PopupSettings } from '@skeletonlabs/skeleton';
 	import SvgIcon from './common/svgIcon.svelte';
+	import { languageStore } from '$lib/functions/store.svelte';
 	import download from 'downloadjs';
-	import GradingPopup from '$lib/components/gradingPopup.svelte';
+	import { onMount } from 'svelte';
+	// import GradingPopup from '$lib/components/gradingPopup.svelte';
 	export let book = '';
-	export let allHadiths: any[] = [];
+	export let dataRecord: any[] = [];
 	export let singleHadithView: boolean = false;
+
+	let arabicFontFamily = 'KFGQPC Uthman Taha Naskh';
 	let gradingColorClass = '';
 	const gradingColor = (grade: string) => {
 		if (!grade) {
@@ -87,194 +91,65 @@
 			loadPopupForIndex = hadithIndex;
 		}
 	}
-</script>
-{#each { length: allHadiths[0].hadiths.length } as _, i}
-	{#if allHadiths[0].hadiths[i].chapter !== undefined && allHadiths[0].hadiths[i].chapter.id && (singleHadithView || allHadiths[0].hadiths[i].chapter['isFirstHadith'])}
-	<div class="p-4">
-			<div class="card variant-glass-primary z-[-1] relative max-w-[90rem] m-auto">
-				<div class="hadithGroup grid">
-					<div class="break-words leading-7 m-3">
-						Chapter {allHadiths[0].hadiths[i].chapter['id']} - {allHadiths[0].hadiths[i].chapter['eng-name'] || ''}
-					</div>
-					<div class="break-words leading-7 m-3 text-right">
-						باب {allHadiths[0].hadiths[i].chapter['id']} - {allHadiths[0].hadiths[i].chapter[
-							'ara-name'
-						]}
-					</div>
-				</div>
-			</div>
-		</div>
-	{/if}
-	<div class="p-4">
-		<div class="p-4 card max-w-[90rem] m-auto">
-			<div id="hadithGroup{i}">
-				<div class="card flex-wrap">
-					<!-- HADITH TEXT -->
-					<div class="hadithGroup font-medium grid">
-						{#each { length: allHadiths.filter(n => n).length } as _, j}
-							<div class="break-words leading-7 m-3 pb-4">
-								{#if allHadiths[j]}
-									{#if !allHadiths[j].hadiths[i] || allHadiths[j].hadiths[i].text == ''}
-										<center>
-											<code class="!text-white !bg-red-500">Hadith translation not found</code>
-										</center>
-									{:else}
-										<article>{@html allHadiths[j].hadiths[i].text}</article>
-									{/if}
-								{/if}
-							</div>
-						{/each}
-					</div>
-					<!-- GRADINGS -->
-					<div class="hadithGroup font-medium grid place-items-center">
-						<!-- [0] because if there are multiple languages selected we only take from the first one, since gradings don't change for different languages -->
-						{#each allHadiths[0].hadiths[i].grades as grade}
-							{#if grade['name'] != ''}
-							<button
-									class="btn m-1 {gradingColor(grade['grade'])} text-wrap max-w-md w-[95%] h-[95%]"
-									use:popup={{
-										state: (event) => func(event, grade['name'], i),
-										event: 'click',
-										target: 'popupFeatured' + grade['name']
-									}}
-								>
-									{@html grade['name'] + ' : ' + grade['grade']}
-								</button>
-								<div
-									class="card p-4 w-72 shadow-xl variant-filled-secondary z-[1]"
-									data-popup="popupFeatured{grade['name']}"
-								>
-									<!-- Why is it not working for  loadPopupForIndex = i -->
-									{#if loadPopupForMuhaddith == grade['name'] && loadPopupForIndex >= i}
-										<GradingPopup
-											muhaddithName={loadPopupForMuhaddith}
-											collection={allHadiths[0].hadiths[i].shortName ?? book}
-											source={grade['source']}
-										/>
-									{/if}
-								</div>
-							{/if}
-						{/each}
-					</div>
-					<div class="hadithGroup grid text-sm mx-4">
-						<div class="py-4 px-2 text-center min-[820px]:text-left">
-							{#if allHadiths[0].metadata}
-								{@html allHadiths[0].metadata.name}
-							{:else}
-								{@html allHadiths[0].hadiths[i].bookName}
-							{/if}
-							{@html allHadiths[0].hadiths[i].arabicnumber}
-							<br />
-							Book {@html allHadiths[0].hadiths[i].reference.book}, Hadith {@html allHadiths[0]
-								.hadiths[i].reference.hadith}
-						</div>
-						<!-- <span class=""/> -->
+	onMount(() => {
+		const myDocs = document.querySelectorAll('#myDiv') as NodeListOf<HTMLElement>;
+		myDocs.forEach((myDoc) => {
+			myDoc.style.setProperty('color', 'blue', 'important');
+			myDoc.style.setProperty('font-family', 'KFGQPC Uthman Taha Naskh', 'important');
+		});
+	})
 
-						<div class="text-[0px] whitespace-pre flex justify-center min-[820px]:justify-end relative">
-							<div id="buttonGroup{i}" class="flex">
-								<div class="mx-1">
-									<button
-										id="permalink{i}"
-										class="text-center justify-center px-4 min-[480px]:px-8 btn bg-primary-500 btn-sm text-black mt-6 h-10 rounded-r-none"
-										on:click={() =>
-											capture(
-												i,
-												(
-													(allHadiths[0].metadata
-														? allHadiths[0].metadata.name
-														: allHadiths[0].hadiths[i].bookName) +
-													' ' +
-													allHadiths[0].hadiths[i].arabicnumber
-												)
-													.replace('<span style="color:red;">', '')
-													.replace('</span>', ''),
-												true,
-												false
-											)}
-									>
-										<SvgIcon name="copy" fill="fill-black" />
-									</button>
-									<button
-										class="btn bg-primary-500 btn-sm text-black mt-6 h-10 rounded-l-none px-4 min-[480px]:px-8 border-l-2 border-primary-900"
-										on:click={() =>
-											capture(
-												i,
-												(
-													(allHadiths[0].metadata
-														? allHadiths[0].metadata.name
-														: allHadiths[0].hadiths[i].bookName) +
-													' ' +
-													allHadiths[0].hadiths[i].arabicnumber
-												)
-													.replace('<span style="color:red;">', '')
-													.replace('</span>', ''),
-												false,
-												true
-											)}
-									>
-										<SvgIcon name="download" fill="fill-black" />
-									</button>
-									<div class="text-center">
-										<p class="text-sm badge opacity-50">SCREENSHOT</p>
-									</div>
-								</div>
-								<br>
-								<div class="mx-1">
-									<button
-										id="permalink{i}"
-										class="text-center justify-center px-4 min-[480px]:px-8 btn bg-primary-500 btn-sm text-black mt-6 h-10 rounded-r-none"
-										use:clipboard={$page.url.protocol +
-											'//' +
-											$page.url.host +
-											'/' +
-											(allHadiths[0].hadiths[i].shortName ?? book) +
-											':' +
-											(allHadiths[0].hadiths[i].hadithnumber | 0)
-												.toString()
-												.replace('<span style="color:red;">', '')
-												.replace('</span>', '')}
-									>
-										<SvgIcon name="copy" fill="fill-black" />
-									</button>
-									<a
-										class="btn bg-primary-500 btn-sm text-black mt-6 h-10 rounded-l-none px-4 min-[480px]:px-8 border-l-2 border-primary-900"
-										href={$page.url.protocol +
-											'//' +
-											$page.url.host +
-											'/' +
-											(allHadiths[0].hadiths[i].shortName ?? book) +
-											':' +
-											(allHadiths[0].hadiths[i].hadithnumber | 0)
-												.toString()
-												.replace('<span style="color:red;">', '')
-												.replace('</span>', '')}
-										target="_blank"
-										rel="noreferrer"
-									>
-										<SvgIcon name="openExternal" fill="fill-black" />
-									</a>
-									<div class="text-center">
-										<p class="text-sm badge opacity-50">LINK</p>
-									</div>
-								</div>
-							</div>
-							<div id="watermark{i}" class="hidden pt-6 pr-10">
-								<SvgIcon class="!w-10" name="icon" />
-								<SvgIcon class="!w-40" name="hadithHub" />
-								<SvgIcon class="!w-20 !fill-error-500 pt-1" name="com" />
-							</div>
-						</div>
-					</div>
+  // Add a CSS property with !important
+</script>
+
+{#if dataRecord[4] == 'chapter'}
+	<div class="p-4">
+		<div class="card variant-glass-primary z-[-1] relative max-w-[90rem] m-auto">
+			<div class="hadithGroup grid">
+				<div class="break-words leading-7 m-3">
+					{dataRecord[6]}
 				</div>
 			</div>
 		</div>
 	</div>
-{/each}
+{:else if dataRecord[4] == 'hadith'}
+	<div class="p-4">
+		<div class="p-4 card max-w-[90rem] m-auto">
+			<div class="card flex-wrap">
+				<div class="hadithGroup font-medium grid">
+					{#each { length: languageStore.value.length ? languageStore.value.length : 2 } as _, i}
+						<div class="break-words leading-7 m-3 pb-4">
+							<article id="myDiv">{@html dataRecord[i + 6]}</article>
+						</div>
+					{/each}
+				</div>
+			</div>
+		</div>
+	</div>
+{/if}
 
 <style>
 	.hadithGroup {
 		grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
 		word-wrap: normal;
+	}
 
+	:global(pre, post) {
+    	text-wrap: auto;
+		--tw-text-opacity: 1;
+		color: rgb(var(--color-error-700) / var(--tw-text-opacity, 1));
+		display: block;
+		/* font-family: "KFGQPC Uthman Taha Naskh" */
+		}
+
+	:global(.dark pre, .dark post) {
+    	text-wrap: auto;
+		--tw-text-opacity: 1;
+		color: rgb(var(--color-error-300) / var(--tw-text-opacity, 1));
+	}
+	
+	:global(text) {
+    	text-wrap: auto;
+		font-size: large;
 	}
 </style>
